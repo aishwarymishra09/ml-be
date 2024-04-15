@@ -55,7 +55,7 @@ jobs:
       - name: Display config file
         run: cat "${HOME}/.kube/config"
       - name: Deploy to K8s
-        run: kubectl get pods
+        run: kubectl apply -f manifest/deployment.yaml
         
 
       - name: Update kubeconfig and deploy pod to remote Kubernetes cluster
