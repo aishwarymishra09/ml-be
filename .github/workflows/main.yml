@@ -55,13 +55,17 @@ jobs:
           mkdir ${HOME}/.kube
           echo ${{ secrets.KUBECONFIG }} | base64 --decode > ${HOME}/.kube/config
           cat ${HOME}/.kube/config
+      - name: Use context
+        run: kubectl config use-context octobay-api
+      - name: Deploy to K8s
+        run: kubectl get pods
 
-      - name: Update kubeconfig and deploy pod to remote Kubernetes cluster
-        env:
-          KUBECONFIG: ./kubeconfig
-        run: |
-          kubectl get pods
-          kubectl apply -f manifest/deployment.yaml 
+      # - name: Update kubeconfig and deploy pod to remote Kubernetes cluster
+      #   env:
+      #     KUBECONFIG: ./kubeconfig
+      #   run: |
+      #     kubectl get pods
+      #     kubectl apply -f manifest/deployment.yaml 
 
-      - name: Force rollout
-        run: kubectl rollout restart deployment app-machine-learning-be
+      # - name: Force rollout
+      #   run: kubectl rollout restart deployment app-machine-learning-be
