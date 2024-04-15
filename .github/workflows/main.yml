@@ -55,6 +55,7 @@ jobs:
         env:
           KUBECONFIG: ./kubeconfig
         run: |
+          cat ./kubeconfig
           kubectl apply -f manifest/deployment.yaml --validate=false
 
       - name: Force rollout
