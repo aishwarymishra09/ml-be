@@ -46,17 +46,22 @@ jobs:
           docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME .
           docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
 
-      - name: Decode Kubernetes config file
-        run: echo "$KUBECONFIG" | base64 --decode > kubeconfig
-        env:
-          KUBECONFIG_ENCODED: ${{ secrets.KUBECONFIG }}
+      # - name: Decode Kubernetes config file
+      #   run: echo "$KUBECONFIG" | base64 --decode > kubeconfig
+      #   env:
+      #     KUBECONFIG_ENCODED: ${{ secrets.KUBECONFIG }}
+      - name: Create kubeconfig
+        run: |
+          mkdir ${HOME}/.kube
+          echo ${{ secrets.KUBECONFIG }} | base64 --decode > ${HOME}/.kube/config
+          cat ${HOME}/.kube/config
 
       - name: Update kubeconfig and deploy pod to remote Kubernetes cluster
         env:
           KUBECONFIG: ./kubeconfig
         run: |
-          cat ./kubeconfig
-          kubectl apply -f manifest/deployment.yaml --validate=false
+          kubectl get pods
+          kubectl apply -f manifest/deployment.yaml 
 
       - name: Force rollout
         run: kubectl rollout restart deployment app-machine-learning-be
