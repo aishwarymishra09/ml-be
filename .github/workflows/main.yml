@@ -55,8 +55,7 @@ jobs:
         env:
           KUBECONFIG: ./kubeconfig
         run: |
-          kubectl apply -f manifest/deployment.yaml
-          kubectl apply -f manifest/service.yaml
+          kubectl apply -f manifest/deployment.yaml --validate=false
 
       - name: Force rollout
         run: kubectl rollout restart deployment app-machine-learning-be
