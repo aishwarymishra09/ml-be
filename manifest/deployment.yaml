@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-machine-learning-be
+  labels:
+    app: app-machine-learning-be
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app-machine-learning-be
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+  template:
+    metadata:
+      labels:
+        app: app-machine-learning-be
+    spec:
+      containers:
+        - name: app-machine-learning-be
+          image: rekog09/app-machine-learning-be
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: app-machine-learning-be-configmap
+            - secretRef:
+                name: app-machine-learning-be-secret.yaml

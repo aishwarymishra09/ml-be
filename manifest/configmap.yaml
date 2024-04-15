@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-machine-learning-be-configmap
+data:
+  DATABASE_HOST: db
+  DATABASE_NAME: roomshaladatabase
+  DATABASE_USER: postgresql
+  AUTH_TABLE: auth_user
