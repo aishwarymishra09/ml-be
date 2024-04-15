@@ -25,7 +25,5 @@ spec:
           ports:
             - containerPort: 8000
           envFrom:
-            - configMapRef:
-                name: app-machine-learning-be-configmap
             - secretRef:
                 name: app-machine-learning-be-secret.yaml
