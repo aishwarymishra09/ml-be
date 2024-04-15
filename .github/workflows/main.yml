@@ -55,7 +55,6 @@ jobs:
         env:
           KUBECONFIG: ./kubeconfig
         run: |
-          kubectl apply -f manifest/secret.yaml
           kubectl apply -f manifest/deployment.yaml
           kubectl apply -f manifest/service.yaml
 

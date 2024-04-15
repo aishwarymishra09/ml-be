@@ -24,6 +24,3 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
-          envFrom:
-            - secretRef:
-                name: app-machine-learning-be-secret.yaml
