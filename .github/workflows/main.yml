@@ -12,53 +12,40 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      # - name: Set up Python
-      #   uses: actions/setup-python@v2
-      #   with:
-      #     python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
 
-      # - name: Install Dependencies
-      #   run: pip install -r requirements.txt
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
 
-      # - name: Run Linting
-      #   run: |
-      #     # Run linting commands here (e.g., flake8, pylint)
+      - name: Run Linting
+        run: |
+          # Run linting commands here (e.g., flake8, pylint)
 
-      # - name: Run Tests
-      #   run: |
-      #     # Run test commands here (e.g., pytest)
+      - name: Run Tests
+        run: |
+          # Run test commands here (e.g., pytest)
 
-      # - name: Security Scanning
-      #   run: |
-      #     # Run security scanning commands here (e.g., snyk)
+      - name: Security Scanning
+        run: |
+          # Run security scanning commands here (e.g., snyk)
 
-      # - name: Login to DockerHub
-      #   uses: docker/login-action@v1
-      #   with:
-      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # - name: Build, tag, and push image to DockerHub
-      #   env:
-      #     DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      #     IMAGE_NAME: app-machine-learning-be
-      #   run: |
-      #     docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME .
-      #     docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
+      - name: Build, tag, and push image to DockerHub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_NAME: app-machine-learning-be
+        run: |
+          docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME .
+          docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
 
-      # - name: Decode Kubernetes config file
-      #   run: echo "$KUBECONFIG" | base64 --decode > kubeconfig
-      #   env:
-      #     KUBECONFIG_ENCODED: ${{ secrets.KUBECONFIG }}
-      # - name: Create kubeconfig
-      #   run: |
-      #     mkdir ${HOME}/.kube
-      #     echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
-      #     cat ${HOME}/.kube/config
-      # - name: Use context
-      #   run: kubectl config use-context octobay-api
-      # - name: Deploy to K8s
-      #   run: kubectl get pods
       - name: Create .kube directory
         run: mkdir -p "${HOME}/.kube"
 
@@ -71,12 +58,11 @@ jobs:
         run: kubectl get pods
         
 
-      # - name: Update kubeconfig and deploy pod to remote Kubernetes cluster
-      #   env:
-      #     KUBECONFIG: ./kubeconfig
-      #   run: |
-      #     kubectl get pods
-      #     kubectl apply -f manifest/deployment.yaml 
-
-      # - name: Force rollout
-      #   run: kubectl rollout restart deployment app-machine-learning-be
+      - name: Update kubeconfig and deploy pod to remote Kubernetes cluster
+        env:
+          KUBECONFIG: ./kubeconfig
+        run: |
+          kubectl apply -f manifest/deployment.yaml 
+          kubectl apply -f manifest/service.yaml
+      - name: Force rollout
+        run: kubectl rollout restart deployment app-machine-learning-be
