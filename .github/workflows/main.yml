@@ -50,15 +50,26 @@ jobs:
       #   run: echo "$KUBECONFIG" | base64 --decode > kubeconfig
       #   env:
       #     KUBECONFIG_ENCODED: ${{ secrets.KUBECONFIG }}
-      - name: Create kubeconfig
-        run: |
-          mkdir ${HOME}/.kube
-          echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
-          cat ${HOME}/.kube/config
-      - name: Use context
-        run: kubectl config use-context octobay-api
+      # - name: Create kubeconfig
+      #   run: |
+      #     mkdir ${HOME}/.kube
+      #     echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
+      #     cat ${HOME}/.kube/config
+      # - name: Use context
+      #   run: kubectl config use-context octobay-api
+      # - name: Deploy to K8s
+      #   run: kubectl get pods
+      - name: Create .kube directory
+        run: mkdir -p "${HOME}/.kube"
+
+      - name: Decode and save KUBE_CONFIG
+        run: echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > "${HOME}/.kube/config"
+
+      - name: Display config file
+        run: cat "${HOME}/.kube/config"
       - name: Deploy to K8s
         run: kubectl get pods
+        
 
       # - name: Update kubeconfig and deploy pod to remote Kubernetes cluster
       #   env:
