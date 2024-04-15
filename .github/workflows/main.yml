@@ -1,4 +1,4 @@
-name: CI/CD Pipeline For Rekogniz Machine Learning Backend
+name: CI/CD Pipeline For Machine Learning Backend
 
 on:
   push:
@@ -46,9 +46,14 @@ jobs:
           docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME .
           docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
 
+      - name: Decode Kubernetes config file
+        run: echo "KUBECONFIG" | base64 --decode > kubeconfig
+        env:
+          KUBECONFIG_ENCODED: ${{ secrets.KUBECONFIG }}
+
       - name: Update kubeconfig and deploy pod to remote Kubernetes cluster
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: ./kubeconfig
         run: |
           kubectl apply -f manifest/configmap.yaml
           kubectl apply -f manifest/secret.yaml
