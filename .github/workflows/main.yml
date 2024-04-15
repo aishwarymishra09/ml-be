@@ -47,7 +47,7 @@ jobs:
           docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
 
       - name: Decode Kubernetes config file
-        run: echo "KUBECONFIG" | base64 --decode > kubeconfig
+        run: echo "$KUBECONFIG" | base64 --decode > kubeconfig
         env:
           KUBECONFIG_ENCODED: ${{ secrets.KUBECONFIG }}
 
