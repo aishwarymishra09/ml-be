@@ -5,7 +5,7 @@ metadata:
   labels:
     app: app-machine-learning-be
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: app-machine-learning-be
