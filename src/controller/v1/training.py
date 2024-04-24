@@ -1,8 +1,6 @@
 import json
-
 from fastapi import FastAPI, BackgroundTasks, APIRouter
 from starlette import status
-
 from src.training_scripts.executable import TrainingExecution
 from src.utils.constants.properties import objs
 from src.utils.data_class.data_class import TrainingData, InferenceData
@@ -25,7 +23,7 @@ async def custom_train(train_data: TrainingData, background_tasks: BackgroundTas
                     success=True).response()
 
 
-@train.get("/inference/{id}")
+@train.post("/inference/{id}")
 async def inference(inference: InferenceData, background_tasks: BackgroundTasks):
     """This function is to handle the inference endpoint call"""
     inference_data = inference.json()
