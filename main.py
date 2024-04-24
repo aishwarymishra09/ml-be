@@ -1,8 +1,6 @@
 import threading
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from src.training_scripts.executable import TrainingExecution
 from src.utils.helper import aws_config
 from src.controller.v1.training import train
@@ -17,13 +15,15 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
 )
+@app.get("/")
+async def root():
+    return {"Hello": "World"}
 
 app.include_router(train, prefix="/v1", tags=["Training"])
 
 
 if __name__ == "__main__":
     try:
-        """ADD MULTIPLE PROCESSING IN CREATING DATABASE TABLE FOR FAST EXECUTION """
         import uvicorn
         objs['training_job'] = TrainingExecution()
         th = threading.Thread(target=objs['training_job'].get_training_job)
