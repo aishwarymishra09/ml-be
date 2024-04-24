@@ -61,7 +61,8 @@ def get_inference(inf: Dict[str, Any]):
                      'diffusers_sample.py',
                      '--id={}'.format(inf['id']),
                      '--request_id={}'.format(inf['request_id']),
-                     f'--delta_ckpt=/root/customdiff/src/logs/cat/{inf["id"]}/{inf["training_id"]}/delta.bin',
+                     f'--delta_ckpt=/root/core/core-ml/logs/cat/{inf["id"]}/{inf["training_id"]}/delta.bin',
+                     ' --ckpt=stabilityai/stable-diffusion-xl-base-1.0',
                      f'--prompt={inf["inference_schema"]["prompt"]}',
                      f'--negative_prompt={inf["inference_schema"]["negative_prompt"]}'
                      '--sdxl'],
