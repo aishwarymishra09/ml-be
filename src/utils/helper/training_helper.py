@@ -58,10 +58,10 @@ def launch_training(train: Dict[str, Any]) -> None:
 def get_inference(inf: Dict[str, Any]):
     """will provide the inference results using the training unique ID """
     subprocess.call([sys.executable,
-                     'src/inference_scripts/inference.py',
+                     'diffusers_sample.py',
                      '--id={}'.format(inf['id']),
                      '--request_id={}'.format(inf['request_id']),
-                     f'--delta_ckpt=/root/customdiff/src/logs/cat/{inf["id"]}/delta.bin',
+                     f'--delta_ckpt=/root/customdiff/src/logs/cat/{inf["id"]}/{inf["training_id"]}/delta.bin',
                      ' --ckpt="stabilityai/stable-diffusion-xl-base-1.0"',
                      f'--prompt={inf["inference_schema"]["prompt"]}',
                      f'--negative_prompt={inf["inference_schema"]["negative_prompt"]}'

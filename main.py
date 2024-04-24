@@ -28,7 +28,7 @@ if __name__ == "__main__":
         objs['training_job'] = TrainingExecution()
         th = threading.Thread(target=objs['training_job'].get_training_job)
         th.start()
-        uvicorn.run(app, port=8000)
+        uvicorn.run(app, host="0.0.0.0", port=8002)
     except Exception as e:
         print("###### EXCEPTION IN MAIN FILE IS {} ####### ".format(e))
 
