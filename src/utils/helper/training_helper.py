@@ -81,10 +81,10 @@ def make_class_images(inctance_dir, class_dir, class_prompt):
         # logger.info('Directory not copied. Error:', e)
         print(e)
     files = os.listdir(class_dir)
-    with open(class_dir + '/image.txt', 'w') as f:
+    with open(class_dir + '/images.txt', 'w') as f:
         for file in files:
             if file.endswith(allowed_extensions):
-                f.write(file + '\n')
+                f.write(class_dir+file + '\n')
     with open(class_dir + '/captions.txt', 'w') as f:
         for i in range(len(files)):
             f.write(class_prompt + '\n')
