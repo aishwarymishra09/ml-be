@@ -91,5 +91,5 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /root/ml-be
-            git pull origin main  # or specify your branch name
+            git pull https://${{secrets.PAT}}@github.com/ml-be.git main  # or specify your branch name
             systemctl restart ml_be  # Replace with your service name
