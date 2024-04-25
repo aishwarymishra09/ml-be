@@ -5,6 +5,8 @@ import sys
 from typing import Dict, Any
 
 from src.utils.constants.properties import cwd_training
+from src.utils.exceptions.custon_exceptions import ServiceError, FileAlreadyExists
+from src.utils.helper.custom_checks import check_model_existence
 from src.utils.helper.s3_helper import download_image_from_s3
 from src.utils.logs.logger import logger
 
@@ -26,7 +28,6 @@ def launch_training(train: Dict[str, Any]) -> None:
 
     instance_dir, class_dir = download_images(train['s3_url'], local_dir, class_dir, train['class_prompt'])
     logger.info('##### Launching training process #######')
-    print(train)
     try:
         subprocess.call([sys.executable,
                          'diffusers_training_sdxl.py',
@@ -57,17 +58,41 @@ def launch_training(train: Dict[str, Any]) -> None:
 
 def get_inference(inf: Dict[str, Any]):
     """will provide the inference results using the training unique ID """
-    subprocess.call([sys.executable,
-                     'diffusers_sample.py',
-                     '--id={}'.format(inf['id']),
-                     '--request_id={}'.format(inf['request_id']),
-                     f'--delta_ckpt=/root/core/core-ml/logs/cat/{inf["id"]}/{inf["training_id"]}/delta.bin',
-                     ' --ckpt=stabilityai/stable-diffusion-xl-base-1.0',
-                     f'--prompt={inf["inference_schema"]["prompt"]}',
-                     f'--negative_prompt={inf["inference_schema"]["negative_prompt"]}'
-                     '--sdxl'],
-                    cwd=cwd_training
-                    )
+    try:
+        subprocess.call([sys.executable,
+                         'diffusers_sample.py',
+                         '--id={}'.format(inf['id']),
+                         '--request_id={}'.format(inf['request_id']),
+                         f'--delta_ckpt=/root/core/core-ml/logs/cat/{inf["id"]}/{inf["training_id"]}/delta.bin',
+                         '--ckpt=stabilityai/stable-diffusion-xl-base-1.0',
+                         f'--prompt={inf["inference_schema"]["prompt"]}',
+                         f'--negative_prompt={inf["inference_schema"]["negative_prompt"]}',
+                         '--sdxl'],
+                        cwd=cwd_training
+                        )
+    except Exception as e:
+        logger.error(f"########## There are some error in launching training process, due to error:{e} #######")
+        raise ServiceError(name="training",
+                           error_message=f"There are some error in launching training process with id: {inf['request_id']}")
+
+
+def get_common_inference(inf: Dict[str, Any]):
+    """will provide the inference results using the training unique ID """
+    try:
+        subprocess.call([sys.executable,
+                         'diffusers_sample.py',
+                         '--id={}'.format(inf['id']),
+                         '--request_id={}'.format(inf['request_id']),
+                         '--ckpt=stabilityai/stable-diffusion-xl-base-1.0',
+                         f'--prompt={inf["inference_schema"]["prompt"]}',
+                         f'--negative_prompt={inf["inference_schema"]["negative_prompt"]}',
+                         '--sdxl'],
+                        cwd=cwd_training
+                        )
+    except Exception as e:
+        logger.error(f"########## There are some error in inference  process, due to error:{e} #######")
+        raise ServiceError(name="training",
+                           error_message=f"There are some error in launching training process with id: {inf['request_id']}")
 
 
 def make_class_images(inctance_dir, class_dir, class_prompt):
@@ -76,17 +101,22 @@ def make_class_images(inctance_dir, class_dir, class_prompt):
     try:
         # Copy the entire directory and its contents recursively
         shutil.copytree(inctance_dir, class_dir)
-        print("Directory copied successfully from", inctance_dir, "to", class_dir)
+        logger.info("Directory copied successfully from", inctance_dir, "to", class_dir)
     except shutil.Error as e:
-        # logger.info('Directory not copied. Error:', e)
-        print(e)
-    files = os.listdir(class_dir)
-    with open(class_dir + '/images.txt', 'w') as f:
-        for file in files:
-            if file.endswith(allowed_extensions):
-                f.write(class_dir+file + '\n')
-    with open(class_dir + '/captions.txt', 'w') as f:
-        for i in range(len(files)):
-            f.write(class_prompt + '\n')
+        logger.info('Directory not copied. Error:', e)
+        raise ServiceError(name="class_image", error_message=f"error in forming class. Error:{e}")
 
-    return class_dir
+    try:
+        files = os.listdir(class_dir)
+        with open(class_dir + '/images.txt', 'w') as f:
+            for file in files:
+                if file.endswith(allowed_extensions):
+                    f.write(class_dir + file + '\n')
+        with open(class_dir + '/caption.txt', 'w') as f:
+            for i in range(len(files)):
+                f.write(class_prompt + '\n')
+
+        return class_dir
+    except Exception as e:
+        logger.error(f"error in making class images. Error:{e}")
+        raise FileAlreadyExists(name="class_images", error_message="error in making class images")

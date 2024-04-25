@@ -20,3 +20,5 @@ def upload_img_to_s3(bucket_name, object_name, s3_client, numpy_image):
     except Exception as e:
         return e
     return True
+
+
