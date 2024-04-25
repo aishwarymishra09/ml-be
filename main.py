@@ -3,7 +3,6 @@ from typing import Callable
 
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from src.training_scripts.executable import TrainingExecution
 from fastapi.responses import JSONResponse
 from src.controller.v1.training import train
@@ -90,7 +89,6 @@ app.add_exception_handler(
         status.HTTP_500_INTERNAL_SERVER_ERROR, "service error"),
 )
 
-app.add_middleware(HTTPSRedirectMiddleware)
 
 if __name__ == "__main__":
     try:
@@ -100,8 +98,7 @@ if __name__ == "__main__":
         th_cache = threading.Thread(target=objs['training_job'].save_queue_data)
         th_train.start()
         th_cache.start()
-        uvicorn.run(app,host="0.0.0.0", port=443, ssl_keyfile="/root/sslcerts/mlbe.rekogniz.com/privkey.key",
-                    ssl_certfile="/root/sslcerts/mlbe.rekogniz.com/certificate.crt")
+        uvicorn.run(app,host="0.0.0.0", port=8002)
     except Exception as e:
         print("###### EXCEPTION IN MAIN FILE IS {} ####### ".format(e))
 
