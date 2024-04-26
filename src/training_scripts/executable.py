@@ -4,6 +4,8 @@ import queue
 import shutil
 import time
 from datetime import datetime, timedelta
+from datetime import datetime
+from pytz import timezone
 
 from src.utils.constants.properties import QUEUE_DATA_FILE, job_status, INPROGRESS, COMPLETED
 from src.utils.exceptions.custon_exceptions import ServiceError
@@ -54,7 +56,7 @@ class TrainingExecution:
 
     def training_st_en_time(self):
         """This method starts a training job."""
-        now = datetime.now() + timedelta(minutes=self.len_training_job() * 1)
+        now = datetime.now(timezone("Asia/Kolkata")) + timedelta(minutes=self.len_training_job() * 1)
         now_plus_10 = now + timedelta(minutes=10)
         return {"start_time": now, "end_time": now_plus_10}
 
