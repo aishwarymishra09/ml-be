@@ -39,5 +39,6 @@ class InferenceData(BaseModel):
 
 
 class InferenceCommonData(BaseModel):
+    id: str = Field(...)
     request_id: str = Field(...)
     inference_schema: InferenceSchema = Field(...)

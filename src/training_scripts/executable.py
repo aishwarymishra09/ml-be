@@ -1,5 +1,7 @@
+import os
 import pickle
 import queue
+import shutil
 import time
 from datetime import datetime, timedelta
 
@@ -37,6 +39,8 @@ class TrainingExecution:
             if not self.training_que.empty():
                 training_job = self.training_que.get()
                 self._start_training_job(training_job)
+                shutil.rmtree(os.getcwd() + f"/{training_job['id']}")
+                logger.info("#### directory removed {} #####".format((os.getcwd() + f"/{training_job['id']}")))
 
     def _start_training_job(self, data):
         """This method starts a training job."""

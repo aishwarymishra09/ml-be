@@ -7,6 +7,7 @@ from typing import Dict, Any
 from src.utils.constants.properties import cwd_training
 from src.utils.exceptions.custon_exceptions import ServiceError, FileAlreadyExists
 from src.utils.helper.custom_checks import check_model_existence
+from src.utils.helper.inference_helper import making_prompts
 from src.utils.helper.s3_helper import download_image_from_s3
 from src.utils.logs.logger import logger
 
@@ -22,6 +23,7 @@ def download_images(s3_url, local_dir, class_dir, class_prompt):
 
 def launch_training(train: Dict[str, Any]) -> None:
     """Launches the training process."""
+    train  = making_prompts(train)
     local_dir = os.getcwd() + f"/{train['id']}" + f"/{train['project_id']}/"
     class_dir = os.getcwd() + f"/{train['id']}" + f"/{train['project_id']}-cls/"
     #TODO: launch GPU instance to train the data
