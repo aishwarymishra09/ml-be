@@ -1,4 +1,6 @@
 from io import BytesIO
+from typing import Dict
+
 import boto3
 from PIL import Image
 
@@ -22,3 +24,9 @@ def upload_img_to_s3(bucket_name, object_name, s3_client, numpy_image):
     return True
 
 
+def making_prompts(train:Dict):
+    """Creates prompts for training data"""
+
+    train['class_prompt'] =  f'a photo of {train["class_name"]}'
+    train['instance_prompt'] = f'a photo of {train["modifier_token"]} {train["class_name"]}'
+    return train

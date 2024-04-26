@@ -2,7 +2,7 @@ import json
 from fastapi import  BackgroundTasks, APIRouter
 from starlette import status
 from src.utils.constants.properties import objs, MODEL_FILE
-from src.utils.data_class.data_class import TrainingData, InferenceData, InferenceSchema
+from src.utils.data_class.data_class import TrainingData, InferenceData, InferenceSchema, InferenceCommonData
 from src.utils.exceptions.custon_exceptions import FileNotFound
 from src.utils.helper.custom_checks import check_model_existence, check_s3_file_exists
 from src.utils.helper.training_helper import  get_inference, get_common_inference
@@ -16,7 +16,8 @@ async def custom_train(train_data: TrainingData):
     """This function is to handle the training apis call"""
     train_data = train_data.json()
     train_data = json.loads(train_data)
-    check_s3_file_exists(train_data['s3_url'])
+    if not check_s3_file_exists(train_data['s3_url']):
+        raise FileNotFound(name=train_data['s3_url'], error_message="file does not exist in the file: ")
     training_time = objs['training_job'].training_st_en_time()
     objs['training_job'].add_training_job(train_data)
     return Response(status_code=status.HTTP_200_OK,
@@ -39,7 +40,7 @@ async def inference(inference: InferenceData, background_tasks: BackgroundTasks)
 
 
 @train.post("/inference/")
-async def common_inference(inference: InferenceSchema, background_tasks: BackgroundTasks):
+async def common_inference(inference: InferenceCommonData, background_tasks: BackgroundTasks):
     """This function is to handle the inference endpoint call"""
     inference_data = inference.json()
     background_tasks.add_task(get_common_inference, json.loads(inference_data))
