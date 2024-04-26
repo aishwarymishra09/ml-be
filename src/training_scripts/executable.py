@@ -44,9 +44,9 @@ class TrainingExecution:
 
     def _start_training_job(self, data):
         """This method starts a training job."""
-        job_status[data["id"]][data["training_id"]] = INPROGRESS
+        job_status[data["training_id"]] = INPROGRESS
         launch_training(data)
-        job_status[data["id"]][data["training_id"]] = COMPLETED
+        job_status[data["training_id"]] = COMPLETED
 
     def len_training_job(self):
         """This method returns the length of the queue."""
@@ -54,11 +54,11 @@ class TrainingExecution:
 
     def training_st_en_time(self):
         """This method starts a training job."""
-        now = datetime.now() + timedelta(minutes=self.len_training_job()*1)
+        now = datetime.now() + timedelta(minutes=self.len_training_job() * 1)
         now_plus_10 = now + timedelta(minutes=10)
-        return {"current_time": now, "end_time": now_plus_10}
+        return {"start_time": now, "end_time": now_plus_10}
 
-    def save_queue_data(self ):
+    def save_queue_data(self):
         # Serialize and save the queue contents
         while True:
             if not self.training_que.empty():

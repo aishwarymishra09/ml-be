@@ -54,11 +54,12 @@ def launch_training(train: Dict[str, Any]) -> None:
                                      cwd=cwd_training,
                                      stdout=subprocess.PIPE)
         if returncode != 0:
-            job_status[train["id"]][train["training_id"]] = FAILED
+            job_status[train["training_id"]] =  FAILED
+
 
     except Exception as e:
         logger.error(f"########## There are some error in launching training process, due to error:{e} #######")
-        job_status[train["id"]][train["training_id"]] = FAILED
+        job_status[train["training_id"]] =  FAILED
 
 
 def get_inference(inf: Dict[str, Any]):
