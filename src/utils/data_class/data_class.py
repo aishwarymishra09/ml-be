@@ -9,7 +9,7 @@ class Resolution(str, Enum):
 
 class TrainingData(BaseModel):
     id: str = Field(...)
-    project_id: str = Field(...)
+    training_id: str = Field(...)
     class_name: str = Field(...)
     resolution: Resolution = Field(...)
     modifier_token: str = Field(...)
