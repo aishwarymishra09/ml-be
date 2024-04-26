@@ -1,7 +1,7 @@
 import json
 from fastapi import BackgroundTasks, APIRouter
 from starlette import status
-from src.utils.constants.properties import objs, MODEL_FILE, job_status
+from src.utils.constants.properties import objs, MODEL_FILE, job_status, REMOTE_IMAGE_FILE
 from src.utils.data_class.data_class import TrainingData, InferenceData, InferenceSchema, InferenceCommonData
 from src.utils.exceptions.custon_exceptions import FileNotFound
 from src.utils.helper.custom_checks import check_model_existence, check_s3_file_exists
@@ -27,27 +27,35 @@ async def custom_train(train_data: TrainingData):
 
 
 @train.post("/concept-inference/")
-async def inference(inference: InferenceData, background_tasks: BackgroundTasks):
+async def inference(inference: InferenceData):
     """This function is to handle the inference endpoint call"""
     inference_data = inference.json()
     inference_data = json.loads(inference_data)
     check_model_existence(MODEL_FILE.format(inference_data['id'], inference_data['training_id']))
-    background_tasks.add_task(get_inference, inference_data)
+    get_common_inference(inference_data)
     return Response(status_code=status.HTTP_200_OK,
                     message="inference invoked",
                     success=True,
-                    data=None).response()
+                    data={"id": inference_data['id'],
+                          "training_id": inference_data['training_id'],
+                          "request_id": inference_data["request_id"],
+                          "image_path": REMOTE_IMAGE_FILE.format(inference_data['id'],
+                                                                 inference_data["request_id"])}).response()
 
 
 @train.post("/inference/")
 async def common_inference(inference: InferenceCommonData, background_tasks: BackgroundTasks):
     """This function is to handle the inference endpoint call"""
-    inference_data = inference.json()
-    background_tasks.add_task(get_common_inference, json.loads(inference_data))
+    inference_data = json.loads(inference.json())
+    get_common_inference(inference_data)
     return Response(status_code=status.HTTP_200_OK,
                     message="inference invoked",
                     success=True,
-                    data=None).response()
+                    data={"id": inference_data['id'],
+                          "training_id": None,
+                          "request_id": inference_data["request_id"],
+                          "image_path": REMOTE_IMAGE_FILE.format(inference_data['id'],
+                                                                 inference_data["request_id"])}).response()
 
 
 @train.get("/wait-time")

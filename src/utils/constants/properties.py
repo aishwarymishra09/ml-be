@@ -12,3 +12,4 @@ cwd_training = '/root/core/core-ml'
 
 QUEUE_DATA_FILE = '/root/core/core-ml/queue-data.json'
 MODEL_FILE = '/root/core/core-ml/logs/cat/{}/{}'
+REMOTE_IMAGE_FILE =  "infernce-rekogniz/{}/{}/sample.png"
