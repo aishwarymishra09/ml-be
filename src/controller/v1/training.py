@@ -63,7 +63,7 @@ async def wait_time():
     """This function is to calculate the wait time for training"""
     train_t = objs['training_job'].len_training_job()
     print(train_t)
-    wait_time = train_t * 10 * 60
+    wait_time = train_t * 10
     return Response(status_code=status.HTTP_200_OK,
                     message="wait time",
                     success=True,
