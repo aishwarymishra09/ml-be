@@ -77,6 +77,8 @@ def get_inference(inf: Dict[str, Any]):
                                      )
         if returncode != 0:
             raise Exception("Inference failed")
+        else:
+            return True
     except Exception as e:
         logger.error(f"########## There are some error in launching training process, due to error:{e} #######")
         raise ServiceError(name="training",
@@ -98,6 +100,8 @@ def get_common_inference(inf: Dict[str, Any]):
                                      )
         if returncode != 0:
             raise Exception("Inference failed")
+        else:
+            return True
     except Exception as e:
         logger.error(f"########## There are some error in inference  process, due to error:{e} #######")
         raise ServiceError(name="training",
