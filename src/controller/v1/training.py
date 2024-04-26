@@ -1,11 +1,11 @@
 import json
-from fastapi import  BackgroundTasks, APIRouter
+from fastapi import BackgroundTasks, APIRouter
 from starlette import status
-from src.utils.constants.properties import objs, MODEL_FILE
+from src.utils.constants.properties import objs, MODEL_FILE, job_status
 from src.utils.data_class.data_class import TrainingData, InferenceData, InferenceSchema, InferenceCommonData
 from src.utils.exceptions.custon_exceptions import FileNotFound
 from src.utils.helper.custom_checks import check_model_existence, check_s3_file_exists
-from src.utils.helper.training_helper import  get_inference, get_common_inference
+from src.utils.helper.training_helper import get_inference, get_common_inference
 from src.utils.misc.custom_helper import Response
 
 train = APIRouter()
@@ -62,7 +62,12 @@ async def wait_time():
                     data=wait_time).response()
 
 
-@train.get("/status/{id}")
-async def status_call():
+@train.get("/status/{training_id}")
+async def status_call(training_id: str):
     """This function is to handle the inference endpoint call"""
-    raise FileNotFound(name="sdfd", error_message="Status call not found")
+    current_status = job_status[training_id]
+    return Response(status_code=status.HTTP_200_OK,
+                    message="status",
+                    success=True,
+                    data={"status": current_status,
+                          "training_id": training_id}).response()

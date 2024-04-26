@@ -4,7 +4,7 @@ import subprocess
 import sys
 from typing import Dict, Any
 
-from src.utils.constants.properties import cwd_training
+from src.utils.constants.properties import cwd_training, job_status, FAILED
 from src.utils.exceptions.custon_exceptions import ServiceError, FileAlreadyExists
 from src.utils.helper.custom_checks import check_model_existence
 from src.utils.helper.inference_helper import making_prompts
@@ -23,55 +23,60 @@ def download_images(s3_url, local_dir, class_dir, class_prompt):
 
 def launch_training(train: Dict[str, Any]) -> None:
     """Launches the training process."""
-    train  = making_prompts(train)
-    local_dir = os.getcwd() + f"/{train['id']}" + f"/{train['project_id']}/"
-    class_dir = os.getcwd() + f"/{train['id']}" + f"/{train['project_id']}-cls/"
+    train = making_prompts(train)
+    local_dir = os.getcwd() + f"/{train['id']}" + f"/{train['training_id']}/"
+    class_dir = os.getcwd() + f"/{train['id']}" + f"/{train['training_id']}-cls/"
     #TODO: launch GPU instance to train the data
 
     instance_dir, class_dir = download_images(train['s3_url'], local_dir, class_dir, train['class_prompt'])
     logger.info('##### Launching training process #######')
     try:
-        subprocess.call([sys.executable,
-                         'diffusers_training_sdxl.py',
-                         '--pretrained_model_name_or_path=stabilityai/stable-diffusion-xl-base-1.0',
-                         f'--instance_data_dir={instance_dir}',
-                         f'--class_data_dir={class_dir}',
-                         f'--output_dir=./logs/cat/{train["id"]}/{train["project_id"]}',
-                         '--with_prior_preservation',
-                         '--real_prior',
-                         '--prior_loss_weight=1.0',
-                         f'--instance_prompt={train["instance_prompt"]}',
-                         f'--class_prompt={train["class_prompt"]}',
-                         f'--resolution={train["resolution"]}',
-                         '--train_batch_size=1',
-                         '--learning_rate=1e-5',
-                         '--lr_warmup_steps=0',
-                         '--max_train_steps=1000',
-                         '--num_class_images=20',
-                         '--scale_lr',
-                         '--hflip',
-                         f'--modifier_token={train["modifier_token"]}'],
-                        cwd=cwd_training,
-                        stdout=subprocess.PIPE)
+        returncode = subprocess.call([sys.executable,
+                                      'diffusers_training_sdxl.py',
+                                      '--pretrained_model_name_or_path=stabilityai/stable-diffusion-xl-base-1.0',
+                                      f'--instance_data_dir={instance_dir}',
+                                      f'--class_data_dir={class_dir}',
+                                      f'--output_dir=./logs/cat/{train["id"]}/{train["training_id"]}',
+                                      '--with_prior_preservation',
+                                      '--real_prior',
+                                      '--prior_loss_weight=1.0',
+                                      f'--instance_prompt={train["instance_prompt"]}',
+                                      f'--class_prompt={train["class_prompt"]}',
+                                      f'--resolution={train["resolution"]}',
+                                      '--train_batch_size=1',
+                                      '--learning_rate=1e-5',
+                                      '--lr_warmup_steps=0',
+                                      '--max_train_steps=1000',
+                                      '--num_class_images=20',
+                                      '--scale_lr',
+                                      '--hflip',
+                                      f'--modifier_token={train["modifier_token"]}'],
+                                     cwd=cwd_training,
+                                     stdout=subprocess.PIPE)
+        if returncode != 0:
+            job_status[train["id"]][train["training_id"]] = FAILED
 
     except Exception as e:
         logger.error(f"########## There are some error in launching training process, due to error:{e} #######")
+        job_status[train["id"]][train["training_id"]] = FAILED
 
 
 def get_inference(inf: Dict[str, Any]):
     """will provide the inference results using the training unique ID """
     try:
-        subprocess.call([sys.executable,
-                         'diffusers_sample.py',
-                         '--id={}'.format(inf['id']),
-                         '--request_id={}'.format(inf['request_id']),
-                         f'--delta_ckpt=/root/core/core-ml/logs/cat/{inf["id"]}/{inf["training_id"]}/delta.bin',
-                         '--ckpt=stabilityai/stable-diffusion-xl-base-1.0',
-                         f'--prompt={inf["inference_schema"]["prompt"]}',
-                         f'--negative_prompt={inf["inference_schema"]["negative_prompt"]}',
-                         '--sdxl'],
-                        cwd=cwd_training
-                        )
+        returncode = subprocess.call([sys.executable,
+                                      'diffusers_sample.py',
+                                      '--id={}'.format(inf['id']),
+                                      '--request_id={}'.format(inf['request_id']),
+                                      f'--delta_ckpt=/root/core/core-ml/logs/cat/{inf["id"]}/{inf["training_id"]}/delta.bin',
+                                      '--ckpt=stabilityai/stable-diffusion-xl-base-1.0',
+                                      f'--prompt={inf["inference_schema"]["prompt"]}',
+                                      f'--negative_prompt={inf["inference_schema"]["negative_prompt"]}',
+                                      '--sdxl'],
+                                     cwd=cwd_training
+                                     )
+        if returncode != 0:
+            raise Exception("Inference failed")
     except Exception as e:
         logger.error(f"########## There are some error in launching training process, due to error:{e} #######")
         raise ServiceError(name="training",
@@ -81,16 +86,18 @@ def get_inference(inf: Dict[str, Any]):
 def get_common_inference(inf: Dict[str, Any]):
     """will provide the inference results using the training unique ID """
     try:
-        subprocess.call([sys.executable,
-                         'diffusers_sample.py',
-                         '--id={}'.format(inf['id']),
-                         '--request_id={}'.format(inf['request_id']),
-                         '--ckpt=stabilityai/stable-diffusion-xl-base-1.0',
-                         f'--prompt={inf["inference_schema"]["prompt"]}',
-                         f'--negative_prompt={inf["inference_schema"]["negative_prompt"]}',
-                         '--sdxl'],
-                        cwd=cwd_training
-                        )
+        returncode = subprocess.call([sys.executable,
+                                      'diffusers_sample.py',
+                                      '--id={}'.format(inf['id']),
+                                      '--request_id={}'.format(inf['request_id']),
+                                      '--ckpt=stabilityai/stable-diffusion-xl-base-1.0',
+                                      f'--prompt={inf["inference_schema"]["prompt"]}',
+                                      f'--negative_prompt={inf["inference_schema"]["negative_prompt"]}',
+                                      '--sdxl'],
+                                     cwd=cwd_training
+                                     )
+        if returncode != 0:
+            raise Exception("Inference failed")
     except Exception as e:
         logger.error(f"########## There are some error in inference  process, due to error:{e} #######")
         raise ServiceError(name="training",

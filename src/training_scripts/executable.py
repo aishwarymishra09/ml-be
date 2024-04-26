@@ -5,7 +5,7 @@ import shutil
 import time
 from datetime import datetime, timedelta
 
-from src.utils.constants.properties import QUEUE_DATA_FILE
+from src.utils.constants.properties import QUEUE_DATA_FILE, job_status, INPROGRESS, COMPLETED
 from src.utils.exceptions.custon_exceptions import ServiceError
 from src.utils.helper.training_helper import launch_training
 from src.utils.logs.logger import logger
@@ -44,7 +44,9 @@ class TrainingExecution:
 
     def _start_training_job(self, data):
         """This method starts a training job."""
+        job_status[data["id"]][data["training_id"]] = INPROGRESS
         launch_training(data)
+        job_status[data["id"]][data["training_id"]] = COMPLETED
 
     def len_training_job(self):
         """This method returns the length of the queue."""
