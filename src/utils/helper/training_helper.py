@@ -118,7 +118,7 @@ def make_class_images(inctance_dir, class_dir, class_prompt):
     try:
         # Copy the entire directory and its contents recursively
         shutil.copytree(inctance_dir, class_dir)
-        logger.info("Directory copied successfully from", inctance_dir, "to", class_dir)
+        logger.info("Directory copied successfully")
     except shutil.Error as e:
         logger.info('Directory not copied. Error:', e)
         raise ServiceError(name="class_image", error_message=f"error in forming class. Error:{e}")
