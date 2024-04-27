@@ -27,7 +27,7 @@ async def custom_train(train_data: TrainingData):
                     success=True).response()
 
 
-@train.get("/concept-inference/")
+@train.post("/concept-inference/")
 def inference(inference: InferenceData):
     """This function is to handle the inference endpoint call"""
     inference_data = inference.json()
@@ -44,7 +44,7 @@ def inference(inference: InferenceData):
                           "image_path": remote_files}).response()
 
 
-@train.get("/inference/")
+@train.post("/inference/")
 def common_inference(inference: InferenceCommonData):
     """This function is to handle the inference endpoint call"""
     inference_data = json.loads(inference.json())
