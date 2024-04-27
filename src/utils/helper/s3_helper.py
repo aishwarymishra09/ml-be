@@ -1,7 +1,9 @@
 import os
+from typing import Dict
 from urllib.parse import urlparse
 from botocore.exceptions import ClientError
 
+from src.utils.constants.properties import REMOTE_IMAGE_FILE
 from src.utils.exceptions.custon_exceptions import FileNotFound, AwsAccessDenied, ServiceError
 from src.utils.helper.aws_config import s3
 import boto3
@@ -32,8 +34,22 @@ def download_image_from_s3(s3_url, local_dir):
             os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
             # Download file from S3
-            bucket.download_file( key, local_path)
+            bucket.download_file(key, local_path)
             logger.info(f"File downloaded successfully to: {local_path}")
         return local_dir
     except ClientError as e:
         logger.error(f"#### Error downloading image. Error {e} ####")
+
+
+def create_s3_inference_file(inf: Dict):
+    """creating s3 files url for inference"""
+    files = []
+    for i in range(1, 5):
+        files.append(REMOTE_IMAGE_FILE.format(inf['id'],
+                                 inf["request_id"], i))
+
+    return files
+
+
+
+

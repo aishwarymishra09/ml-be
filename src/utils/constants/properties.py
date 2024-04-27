@@ -12,4 +12,4 @@ cwd_training = '/root/core/core-ml'
 
 QUEUE_DATA_FILE = '/root/core/core-ml/queue-data.json'
 MODEL_FILE = '/root/core/core-ml/logs/cat/{}/{}'
-REMOTE_IMAGE_FILE = "https://rekogniz-training.s3.eu-north-1.amazonaws.com/infernce-rekogniz/{}/{}/sample.png"
+REMOTE_IMAGE_FILE = "https://rekogniz-training-data.s3.eu-north-1.amazonaws.com/infernce-rekogniz/{}/{}/sample_{}.png"
