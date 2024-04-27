@@ -44,7 +44,7 @@ def download_image_from_s3(s3_url, local_dir):
 def create_s3_inference_file(inf: Dict):
     """creating s3 files url for inference"""
     files = []
-    for i in range(1, 5):
+    for i in range(1, 4):
         files.append(REMOTE_IMAGE_FILE.format(inf['id'],
                                  inf["request_id"], i))
 
