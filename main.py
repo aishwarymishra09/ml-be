@@ -1,4 +1,5 @@
 import threading
+from datetime import datetime
 from typing import Callable
 
 from fastapi import FastAPI, Request, status
@@ -88,6 +89,16 @@ app.add_exception_handler(
     handler=create_exception_handler(
         status.HTTP_500_INTERNAL_SERVER_ERROR, "service error"),
 )
+
+
+@app.middleware("http")
+async def middleware(request: Request, call_next):
+    start_time = datetime.utcnow()
+    response = await call_next(request)
+    # modify response adding custom headers
+    execution_time = (datetime.utcnow() - start_time).microseconds
+    response.headers["x-execution-time"] = str(execution_time)
+    return response
 
 
 if __name__ == "__main__":

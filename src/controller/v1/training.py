@@ -5,6 +5,7 @@ from src.utils.constants.properties import objs, MODEL_FILE, job_status, REMOTE_
 from src.utils.data_class.data_class import TrainingData, InferenceData, InferenceSchema, InferenceCommonData
 from src.utils.exceptions.custon_exceptions import FileNotFound
 from src.utils.helper.custom_checks import check_model_existence, check_s3_file_exists
+from src.utils.helper.s3_helper import create_s3_inference_file
 from src.utils.helper.training_helper import get_inference, get_common_inference
 from src.utils.misc.custom_helper import Response
 
@@ -33,14 +34,14 @@ async def inference(inference: InferenceData):
     inference_data = json.loads(inference_data)
     check_model_existence(MODEL_FILE.format(inference_data['id'], inference_data['training_id']))
     get_common_inference(inference_data)
+    remote_files = create_s3_inference_file(inference_data)
     return Response(status_code=status.HTTP_200_OK,
                     message="inference invoked",
                     success=True,
                     data={"id": inference_data['id'],
                           "training_id": inference_data['training_id'],
                           "request_id": inference_data["request_id"],
-                          "image_path": REMOTE_IMAGE_FILE.format(inference_data['id'],
-                                                                 inference_data["request_id"])}).response()
+                          "image_path": remote_files}).response()
 
 
 @train.post("/inference/")
@@ -48,14 +49,14 @@ async def common_inference(inference: InferenceCommonData, background_tasks: Bac
     """This function is to handle the inference endpoint call"""
     inference_data = json.loads(inference.json())
     get_common_inference(inference_data)
+    remote_files = create_s3_inference_file(inference_data)
     return Response(status_code=status.HTTP_200_OK,
                     message="inference invoked",
                     success=True,
                     data={"id": inference_data['id'],
                           "training_id": None,
                           "request_id": inference_data["request_id"],
-                          "image_path": REMOTE_IMAGE_FILE.format(inference_data['id'],
-                                                                 inference_data["request_id"])}).response()
+                          "image_path": remote_files}).response()
 
 
 @train.get("/wait-time")
