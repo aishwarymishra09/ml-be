@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from typing import Dict, Any
 
 from src.utils.constants.properties import cwd_training, job_status, FAILED
@@ -89,6 +90,7 @@ def get_inference(inf: Dict[str, Any]):
 def get_common_inference(inf: Dict[str, Any]):
     """will provide the inference results using the training unique ID """
     try:
+
         returncode = subprocess.call([sys.executable,
                                       'diffusers_sample.py',
                                       '--id={}'.format(inf['id']),
@@ -99,6 +101,7 @@ def get_common_inference(inf: Dict[str, Any]):
                                       '--sdxl'],
                                      cwd=cwd_training
                                      )
+
         if returncode != 0:
             raise Exception("Inference failed")
         else:
