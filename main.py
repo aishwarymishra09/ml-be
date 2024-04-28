@@ -105,10 +105,10 @@ if __name__ == "__main__":
     try:
         import uvicorn
         objs['training_job'] = TrainingExecution()
-        # th_train = threading.Thread(target=objs['training_job'].get_training_job)
-        # th_cache = threading.Thread(target=objs['training_job'].save_queue_data)
-        # th_train.start()
-        # th_cache.start()
+        th_train = threading.Thread(target=objs['training_job'].get_training_job)
+        th_cache = threading.Thread(target=objs['training_job'].save_queue_data)
+        th_train.start()
+        th_cache.start()
         uvicorn.run(app,host="0.0.0.0", port=8002,  timeout_keep_alive=240, timeout_graceful_shutdown=240)
     except Exception as e:
         print("###### EXCEPTION IN MAIN FILE IS {} ####### ".format(e))

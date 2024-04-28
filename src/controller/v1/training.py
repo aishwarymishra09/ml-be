@@ -20,8 +20,8 @@ async def custom_train(train_data: TrainingData):
     if not check_s3_file_exists(train_data['s3_url']):
         raise FileNotFound(name=train_data['s3_url'], error_message="file does not exist in the file: ")
     training_time = objs['training_job'].training_st_en_time()
-    # objs['training_job'].add_training_job(train_data)
-    launch_training(train_data)
+    objs['training_job'].add_training_job(train_data)
+    # launch_training(train_data)
     return Response(status_code=status.HTTP_200_OK,
                     message="Training job triggered successfully",
                     data=training_time,
