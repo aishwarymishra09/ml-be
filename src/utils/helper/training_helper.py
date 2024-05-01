@@ -49,6 +49,7 @@ def launch_training(train: Dict[str, Any]) -> None:
                                       '--lr_warmup_steps=0',
                                       '--max_train_steps=1000',
                                       '--num_class_images=20',
+                                      f'--training_id={train["training_id"]}',
                                       '--scale_lr',
                                       '--hflip',
                                       f'--modifier_token={train["modifier_token"]}'],
