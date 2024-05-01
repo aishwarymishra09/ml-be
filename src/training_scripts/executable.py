@@ -15,6 +15,7 @@ from src.utils.logs.logger import logger
 
 class TrainingExecution:
     def __init__(self):
+        self.in_progress = False
         try:
             with open(QUEUE_DATA_FILE, "rb") as f:
                 l = pickle.load(f)
@@ -25,6 +26,7 @@ class TrainingExecution:
         except (FileNotFoundError, EOFError):
 
             self.training_que = queue.Queue()
+
 
     def add_training_job(self, training_job):
         """This method adds a training job to the queue."""
@@ -47,16 +49,22 @@ class TrainingExecution:
     def _start_training_job(self, data):
         """This method starts a training job."""
         job_status[data["training_id"]] = INPROGRESS
+        self.in_progress = True
         launch_training(data)
         job_status[data["training_id"]] = COMPLETED
-
+        self.in_progress = False
     def len_training_job(self):
         """This method returns the length of the queue."""
         return self.training_que.qsize()
 
     def training_st_en_time(self):
         """This method starts a training job."""
-        now = datetime.now(timezone("Asia/Kolkata")) + timedelta(minutes=self.len_training_job() * 1)
+        if self.in_progress:
+            count = 1
+        else:
+            count = 0
+
+        now = datetime.now(timezone("Asia/Kolkata")) + timedelta(minutes=(self.len_training_job()+count) * 10)
         now_plus_10 = now + timedelta(minutes=10)
         return {"start_time": now, "end_time": now_plus_10}
 
