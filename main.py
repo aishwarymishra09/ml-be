@@ -87,7 +87,7 @@ app.add_exception_handler(
 app.add_exception_handler(
     exc_class_or_status_code=ServiceError,
     handler=create_exception_handler(
-        status.HTTP_500_INTERNAL_SERVER_ERROR, "service error"),
+        status.HTTP_400_BAD_REQUEST, "service error"),
 )
 
 
@@ -97,6 +97,7 @@ async def middleware(request: Request, call_next):
     response = await call_next(request)
     # modify response adding custom headers
     execution_time = (datetime.utcnow() - start_time).microseconds
+    print(execution_time)
     response.headers["x-execution-time"] = str(execution_time)
     return response
 
