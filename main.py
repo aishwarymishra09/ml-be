@@ -87,7 +87,7 @@ app.add_exception_handler(
 app.add_exception_handler(
     exc_class_or_status_code=ServiceError,
     handler=create_exception_handler(
-        status.HTTP_500_INTERNAL_SERVER_ERROR, "service error"),
+        status.HTTP_400_BAD_REQUEST, "service error"),
 )
 
 
@@ -97,6 +97,7 @@ async def middleware(request: Request, call_next):
     response = await call_next(request)
     # modify response adding custom headers
     execution_time = (datetime.utcnow() - start_time).microseconds
+    print(execution_time)
     response.headers["x-execution-time"] = str(execution_time)
     return response
 
@@ -109,7 +110,7 @@ if __name__ == "__main__":
         th_cache = threading.Thread(target=objs['training_job'].save_queue_data)
         th_train.start()
         th_cache.start()
-        uvicorn.run(app,host="0.0.0.0", port=8002,  timeout_keep_alive=240, timeout_graceful_shutdown=240)
+        uvicorn.run(app,  port=8002,  timeout_keep_alive=240, timeout_graceful_shutdown=240)
     except Exception as e:
         print("###### EXCEPTION IN MAIN FILE IS {} ####### ".format(e))
 

@@ -1,10 +1,11 @@
 import json
-from fastapi import BackgroundTasks, APIRouter
+from fastapi import BackgroundTasks, APIRouter, Header
 from starlette import status
 from src.utils.constants.properties import objs, MODEL_FILE, job_status, REMOTE_IMAGE_FILE
 from src.utils.data_class.data_class import TrainingData, InferenceData, InferenceSchema, InferenceCommonData
 from src.utils.exceptions.custon_exceptions import FileNotFound
-from src.utils.helper.custom_checks import check_model_existence, check_s3_file_exists
+from src.utils.helper.custom_checks import check_model_existence, check_s3_file_exists, decode_verification_key, \
+    decode_verification_key_sync
 from src.utils.helper.s3_helper import create_s3_inference_file
 from src.utils.helper.training_helper import get_inference, get_common_inference, launch_training
 from src.utils.misc.custom_helper import Response
@@ -13,8 +14,9 @@ train = APIRouter()
 
 
 @train.post("/train")
-async def custom_train(train_data: TrainingData):
+async def custom_train(train_data: TrainingData, verification_key: str = Header(default=...)):
     """This function is to handle the training apis call"""
+    await decode_verification_key(encoded=verification_key)
     train_data = train_data.json()
     train_data = json.loads(train_data)
     if not check_s3_file_exists(train_data['s3_url']):
@@ -29,8 +31,9 @@ async def custom_train(train_data: TrainingData):
 
 
 @train.post("/concept-inference/")
-def inference(inference: InferenceData):
+def inference(inference: InferenceData,verification_key: str = Header(default=...)):
     """This function is to handle the inference endpoint call"""
+    decode_verification_key_sync(encoded=verification_key)
     inference_data = inference.json()
     inference_data = json.loads(inference_data)
     check_model_existence(MODEL_FILE.format(inference_data['id'], inference_data['training_id']))
@@ -46,8 +49,9 @@ def inference(inference: InferenceData):
 
 
 @train.post("/inference/")
-def common_inference(inference: InferenceCommonData):
+def common_inference(inference: InferenceCommonData, verification_key: str = Header(default=...)):
     """This function is to handle the inference endpoint call"""
+    decode_verification_key_sync(encoded=verification_key)
     inference_data = json.loads(inference.json())
     get_common_inference(inference_data)
     remote_files = create_s3_inference_file(inference_data)
@@ -61,8 +65,9 @@ def common_inference(inference: InferenceCommonData):
 
 
 @train.get("/wait-time")
-async def wait_time():
+async def wait_time(verification_key: str = Header(default=...)):
     """This function is to calculate the wait time for training"""
+    await decode_verification_key(encoded=verification_key)
     train_t = objs['training_job'].len_training_job()
     print(train_t)
     wait_time = train_t * 10
@@ -73,8 +78,9 @@ async def wait_time():
 
 
 @train.get("/status/{training_id}")
-async def status_call(training_id: str):
+async def status_call(training_id: str, verification_key: str = Header(default=...)):
     """This function is to handle the inference endpoint call"""
+    await decode_verification_key(encoded=verification_key)
     current_status = job_status[training_id]
     return Response(status_code=status.HTTP_200_OK,
                     message="status",

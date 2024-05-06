@@ -1,12 +1,14 @@
+import base64
 import os
 from urllib.parse import urlparse
 
-from src.utils.exceptions.custon_exceptions import FileNotFound, ServiceError
+from src.utils.exceptions.custon_exceptions import FileNotFound, ServiceError, MlBaseApiError
 
 import boto3
 from botocore.exceptions import ClientError
 from src.utils.helper.aws_config import s3_client
 from src.utils.logs.logger import logger
+
 
 def check_s3_file_exists(s3_url):
     s3 = s3_client
@@ -27,8 +29,6 @@ def check_s3_file_exists(s3_url):
         raise ServiceError(name=s3_url, error_message="unexpected error occurred while downloading the file")
 
 
-
-
 def check_aws_credentials():
     pass
 
@@ -39,3 +39,30 @@ def check_model_existence(model_path):
     else:
         raise FileNotFound(name="Inference", error_message="model file not found")
 
+
+async def decode_verification_key(encoded):
+    try:
+        text = base64.b64decode(encoded).decode()
+
+        if text != "rekoGnizTechnologiesPriVaTeLiMeted###1234096896":
+            raise ServiceError(name="authentication_failed",
+                               error_message="verification key verification failed"
+                               )
+    except Exception as e:
+        raise ServiceError(name="authentication_failed",
+                           error_message="provided value is not base64"
+                           )
+
+
+def decode_verification_key_sync(encoded):
+    try:
+        text = base64.b64decode(encoded).decode()
+
+        if text != "rekoGnizTechnologiesPriVaTeLiMeted###1234096896":
+            raise ServiceError(name="authentication_failed",
+                               error_message="verification key verification failed"
+                               )
+    except Exception as e:
+        raise ServiceError(name="authentication_failed",
+                           error_message="provided value is not base64"
+                           )
