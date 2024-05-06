@@ -42,17 +42,18 @@ class TrainingExecution:
         while True:
             if not self.training_que.empty():
                 training_job = self.training_que.get()
+                self.in_progress = True
                 self._start_training_job(training_job)
+                self.in_progress = False
                 shutil.rmtree(os.getcwd() + f"/{training_job['id']}")
                 logger.info("#### directory removed {} #####".format((os.getcwd() + f"/{training_job['id']}")))
 
     def _start_training_job(self, data):
         """This method starts a training job."""
         job_status[data["training_id"]] = INPROGRESS
-        self.in_progress = True
         launch_training(data)
         job_status[data["training_id"]] = COMPLETED
-        self.in_progress = False
+
     def len_training_job(self):
         """This method returns the length of the queue."""
         return self.training_que.qsize()
@@ -63,7 +64,7 @@ class TrainingExecution:
             count = 1
         else:
             count = 0
-
+        logger.info(self.in_progress)
         now = datetime.now(timezone("Asia/Kolkata")) + timedelta(minutes=(self.len_training_job()+count) * 10)
         now_plus_10 = now + timedelta(minutes=10)
         return {"start_time": now, "end_time": now_plus_10}
