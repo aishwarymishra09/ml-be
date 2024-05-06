@@ -5,8 +5,8 @@ COMPLETED = "COMPLETED"
 FAILED = "FAILED"
 
 REGION = "eu-north-1"
-ACCESS_KEY_ID = "AKIAYS2NTZNHNDGBP3PV"
-SECRET_ACCESS_KEY = "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"
+ACCESS_KEY_ID = "AKIAYS2NTZNHMYCK4VUN"
+SECRET_ACCESS_KEY = "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"
 objs = {}
 cwd_training = '/root/core/core-ml'
 
