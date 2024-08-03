@@ -138,3 +138,7 @@ def make_class_images(inctance_dir, class_dir, class_prompt):
     except Exception as e:
         logger.error(f"error in making class images. Error:{e}")
         raise FileAlreadyExists(name="class_images", error_message="error in making class images")
+
+
+
+

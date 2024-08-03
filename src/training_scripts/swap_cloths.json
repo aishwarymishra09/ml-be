@@ -1,0 +1,170 @@
+{
+  "12": {
+    "inputs": {
+      "prompt": "shirt",
+      "threshold": 0.3,
+      "sam_model": [
+        "19",
+        0
+      ],
+      "grounding_dino_model": [
+        "18",
+        0
+      ],
+      "image": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "GroundingDinoSAMSegment (segment anything)",
+    "_meta": {
+      "title": "GroundingDinoSAMSegment (segment anything)"
+    }
+  },
+  "13": {
+    "inputs": {
+      "image": "07200478330-e1.jpg",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Garment"
+    }
+  },
+  "14": {
+    "inputs": {
+      "image": "image_mod.jpeg",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Model Image"
+    }
+  },
+  "15": {
+    "inputs": {
+      "model": "densepose_r50_fpn_dl.torchscript",
+      "cmap": "Viridis (MagicAnimate)",
+      "resolution": 512,
+      "image": [
+        "14",
+        0
+      ]
+    },
+    "class_type": "DensePosePreprocessor",
+    "_meta": {
+      "title": "DensePose Estimator"
+    }
+  },
+  "16": {
+    "inputs": {
+      "mask": [
+        "12",
+        1
+      ]
+    },
+    "class_type": "MaskToImage",
+    "_meta": {
+      "title": "Convert Mask to Image"
+    }
+  },
+  "17": {
+    "inputs": {
+      "weight_dtype": "float32"
+    },
+    "class_type": "PipelineLoader",
+    "_meta": {
+      "title": "Load IDM-VTON Pipeline"
+    }
+  },
+  "18": {
+    "inputs": {
+      "model_name": "GroundingDINO_SwinB (938MB)"
+    },
+    "class_type": "GroundingDinoModelLoader (segment anything)",
+    "_meta": {
+      "title": "GroundingDinoModelLoader (segment anything)"
+    }
+  },
+  "19": {
+    "inputs": {
+      "model_name": "sam_vit_h (2.56GB)"
+    },
+    "class_type": "SAMModelLoader (segment anything)",
+    "_meta": {
+      "title": "SAMModelLoader (segment anything)"
+    }
+  },
+  "20": {
+    "inputs": {
+      "images": [
+        "21",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "21": {
+    "inputs": {
+      "garment_description": "",
+      "negative_prompt": "",
+      "width": 768,
+      "height": 1024,
+      "num_inference_steps": 30,
+      "guidance_scale": 2,
+      "strength": 1,
+      "seed": 18648259467053,
+      "pipeline": [
+        "17",
+        0
+      ],
+      "human_img": [
+        "14",
+        0
+      ],
+      "pose_img": [
+        "15",
+        0
+      ],
+      "mask_img": [
+        "16",
+        0
+      ],
+      "garment_img": [
+        "13",
+        0
+      ]
+    },
+    "class_type": "IDM-VTON",
+    "_meta": {
+      "title": "Run IDM-VTON Inference"
+    }
+  },
+  "22": {
+    "inputs": {
+      "images": [
+        "16",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "25": {
+    "inputs": {
+      "images": [
+        "15",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  }
+}

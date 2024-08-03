@@ -4,6 +4,8 @@ from typing import Callable
 
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+
+from src.controller.v1.cloth_swap import fashion
 from src.training_scripts.executable import TrainingExecution
 from fastapi.responses import JSONResponse
 from src.controller.v1.training import train
@@ -26,6 +28,7 @@ async def health():
     return {"status": "OK"}
 
 app.include_router(train, prefix="/v1", tags=["Training"])
+app.include_router(fashion, prefix="/v1", tags=["Utility"])
 
 def create_exception_handler(
     status_code: int, initial_detail: str
