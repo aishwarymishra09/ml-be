@@ -9,10 +9,11 @@ from src.controller.v1.cloth_swap import fashion
 from src.training_scripts.executable import TrainingExecution
 from fastapi.responses import JSONResponse
 from src.controller.v1.training import train
-from src.utils.constants.properties import objs
+from src.utils.constants.properties import objs, ACCESS_KEY_ID, SECRET_ACCESS_KEY, keys
 from src.utils.exceptions.custon_exceptions import MlBaseApiError, FileNotFound, FileAlreadyExists, AwsAccessDenied, \
     TrainingError, TrainingNotFound, InferenceError, ServiceError
 from src.utils.logs.logger import logger
+from src.utils.misc.aws_key_helper import decode_aws_keys
 
 app = FastAPI(title="Training APIs ", version="1.0.0")
 # Allow CORS for all origins
@@ -108,6 +109,8 @@ async def middleware(request: Request, call_next):
 if __name__ == "__main__":
     try:
         import uvicorn
+
+        keys["ACCESS_KEY_ID"], keys["SECRET_ACCESS_KEY"] = decode_aws_keys(ACCESS_KEY_ID, SECRET_ACCESS_KEY)
         objs['training_job'] = TrainingExecution()
         th_train = threading.Thread(target=objs['training_job'].get_training_job)
         th_cache = threading.Thread(target=objs['training_job'].save_queue_data)

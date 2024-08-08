@@ -5,6 +5,7 @@ from enum import Enum
 class Fashion(BaseModel):
     id: str = Field(...)
     prompt: str = Field(...)
+    model_path: str = Field(...)
     s3_path: str = Field(...)
 
 
@@ -19,6 +20,6 @@ class AddBg(BaseModel):
 
 class BgCustom(BaseModel):
     id: str = Field(...)
-    image_path: str = Field(...)
+    s3_path: str = Field(...)
     prompt: str = Field(...)
     bg_prompt: str = Field(...)

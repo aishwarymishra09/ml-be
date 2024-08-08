@@ -1,7 +1,6 @@
 import json
 from fastapi import APIRouter, Header
 from starlette import status
-
 from src.utils.data_class.utility_data_class import Fashion, AddBg, BgCustom
 from src.utils.helper.custom_checks import decode_verification_key_sync
 from src.utils.helper.utility_helper import model_cloth_swap, custom_bg
@@ -15,7 +14,8 @@ def swap_fashion(fashion:Fashion, verification_key: str = Header(default=...)):
     decode_verification_key_sync(encoded=verification_key)
     fashion_data = fashion.json()
     fashion_data = json.loads(fashion_data)
-    remote_files = model_cloth_swap(fashion_data['id'], fashion_data['prompt'], fashion_data['s3_path'])
+    remote_files = model_cloth_swap(fashion_data['id'], fashion_data['prompt'], fashion_data['model_path'],
+                                    fashion_data['s3_path'])
 
     return Response(status_code=status.HTTP_200_OK,
                     message="cloth swapped",
@@ -33,7 +33,7 @@ def swap_background(bg: BgCustom, verification_key: str = Header(default=...)):
     decode_verification_key_sync(encoded=verification_key)
     bg_data = bg.json()
     bg_data = json.loads(bg_data)
-    remote_files = custom_bg(bg_data['id'], bg_data['image_path'], bg_data['prompt'], bg_data['bg_prompt'])
+    remote_files = custom_bg(bg_data['id'], bg_data['s3_path'], bg_data['prompt'], bg_data['bg_prompt'])
 
     return Response(status_code=status.HTTP_200_OK,
                     message="background_generated",

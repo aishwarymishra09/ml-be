@@ -23,11 +23,12 @@ def download_image_from_s3(s3_url, local_dir):
         for obj in bucket.objects.filter(Prefix=directory_prefix):
             key = obj.key
             file_name = os.path.basename(key)
+            if not file_name:
+                continue
             local_path = os.path.join(local_dir, file_name)
             files.append(local_path)
             # Skip directories
-            if not file_name:
-                continue
+
 
             # Create directories if they don't exist
             os.makedirs(os.path.dirname(local_path), exist_ok=True)
