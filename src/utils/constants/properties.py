@@ -1,3 +1,5 @@
+from src.utils.misc.aws_key_helper import decode_aws_keys
+
 job_status = {}
 
 INPROGRESS = "INPROGRESS"
@@ -8,9 +10,8 @@ REGION = "eu-north-1"
 keys = {}
 ACCESS_KEY_ID_encoded = "EPOHa\<RY`UPVcGP:]]W"
 SECRET_ACCESS_KEY_encoded = "RRhxnzLo[y;v~LlTq>:u|MJ|pmKl5=lAoUyl"
+keys["ACCESS_KEY_ID"], keys["SECRET_ACCESS_KEY"] = decode_aws_keys(ACCESS_KEY_ID_encoded, SECRET_ACCESS_KEY_encoded)
 
-ACCESS_KEY_ID = keys["ACCESS_KEY_ID"]
-SECRET_ACCESS_KEY = keys["SECRET_ACCESS_KEY"]
 objs = {}
 cwd_training = '/root/core/core-ml'
 
