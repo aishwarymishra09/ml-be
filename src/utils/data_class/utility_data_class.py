@@ -23,4 +23,4 @@ class BgCustom(BaseModel):
     s3_path: str = Field(...)
     prompt: str = Field(...)
     bg_prompt: str = Field(...)
-    superimpose: str = False
+    superimpose: bool = False
