@@ -55,7 +55,7 @@ def model_cloth_swap(uid, prompt, model_path, s3_path):
     return img_path
 
 
-def custom_bg(uid, image_path, product_prompt, prompt_bg):
+def custom_bg(uid, image_path, product_prompt,superimpose, prompt_bg):
     """This function is used to change the background of the images"""
     client_id = str(uuid.uuid4())
     with open('src/training_scripts/aa.json', 'r') as file:
@@ -75,7 +75,7 @@ def custom_bg(uid, image_path, product_prompt, prompt_bg):
     ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
     images = get_images(ws, data, client_id, server_address)
 
-    print(images.keys())#img_path = REMOTE_IMAGE_FILE.format("bg", uid, 1)
+    #img_path = REMOTE_IMAGE_FILE.format("bg", uid, 1)
     # Commented out code to display the output images:
     img_path = REMOTE_IMAGE_FILE.format("bg", uid, 1)
     for node_id in images:
@@ -83,7 +83,24 @@ def custom_bg(uid, image_path, product_prompt, prompt_bg):
         for image_data in images[node_id]:
             if node_id == '100':
                 image = Image.open(io.BytesIO(image_data))
+                if superimpose:
+                    superimpose_bg()
+
                 save_image(image, "infernce-rekogniz/bg" + f"/{uid}" + f"/sample_1.png")
                 # image.save("{}.png".format(node_id + 'bg'))
     shutil.rmtree(local_path)
     return img_path
+
+def superimpose_bg(input_image, generated_image):
+    """This function is used to change the background of the images"""
+    client_id = str(uuid.uuid4())
+    with open('src/training_scripts/aa.json', 'r') as file:
+        data = json.load(file)
+
+    data['106']['inputs']['image'] = input_image
+    data['107']['inputs']['image'] = generated_image
+    ws = websocket.WebSocket()
+    ws.connect("ws://{}/ws?clientId={}".format(server_address, client_id))
+    images = get_images(ws, data, client_id, server_address)
+
+    return images["109"]

@@ -1,0 +1,57 @@
+{
+  "106": {
+    "inputs": {
+      "image": "PB-_temp_tlxse_00001_.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "107": {
+    "inputs": {
+      "image": "ComfyUI_temp_pjoyg_00019_.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
+    }
+  },
+  "108": {
+    "inputs": {
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "destination": [
+        "106",
+        0
+      ],
+      "source": [
+        "107",
+        0
+      ],
+      "mask": [
+        "106",
+        1
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "ImageCompositeMasked"
+    }
+  },
+  "109": {
+    "inputs": {
+      "images": [
+        "108",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  }
+}
