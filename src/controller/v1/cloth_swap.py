@@ -33,7 +33,7 @@ def swap_background(bg: BgCustom, verification_key: str = Header(default=...)):
     decode_verification_key_sync(encoded=verification_key)
     bg_data = bg.json()
     bg_data = json.loads(bg_data)
-    remote_files = custom_bg(bg_data['id'], bg_data['s3_path'], bg_data['prompt'], bg_data['bg_prompt'])
+    remote_files = custom_bg(bg_data['id'], bg_data['s3_path'], bg_data['prompt'],bg_data['superimpose'], bg_data['bg_prompt'])
 
     return Response(status_code=status.HTTP_200_OK,
                     message="background_generated",
